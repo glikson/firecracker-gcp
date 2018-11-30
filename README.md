@@ -12,12 +12,12 @@ Here is a brief summary of steps to create such a setup, comprising a Ubuntu-bas
   
   1. You would need the `gcloud` CLI installed and configured to interact with your project on GCP. If you don't have it yet, here is how to do it on an EC2 t2.micro instance running Ubuntu 16.  
      1. Install GCP CLI & SDK (full instructions can be found [here](https://cloud.google.com/sdk/docs/quickstart-debian-ubuntu))
-     ```
-     $ export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
-     $ echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-     $ curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-     $ sudo apt-get update && sudo apt-get install -y google-cloud-sdk
-     ```        
+        ```
+        $ export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+        $ echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+        $ curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+        $ sudo apt-get update && sudo apt-get install -y google-cloud-sdk
+        ```        
      1. Configure the CLI by running:
      ```
      $ gcloud init --console-only
@@ -45,8 +45,7 @@ Here is a brief summary of steps to create such a setup, comprising a Ubuntu-bas
      $ gcloud compute ssh firecracker-vm
      ```
      When doing it for the first time, a key-pair will be created for you (you will be propmpted for a passphrase - can just keep it empty) and uploaded to GCE. Done! You should see the prompt of the new VM: `ubuntu@firecracker-vm:~$`  
-  1. Install and enable KVM
-     1. Verify that nested KVM is enabled in the VM:
+  1. Verify that VMX is enabled, install and enable KVM
      ```
      $ grep -cw vmx /proc/cpuinfo
      1
