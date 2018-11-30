@@ -22,7 +22,7 @@ Here is a brief summary of steps to create such a setup, comprising a Ubuntu-bas
         ```
         $ gcloud init --console-only
         ```
-     Follow the prompts to authenticate (open the provided link, authenticate, copy the token back to console) and select the project you created
+        Follow the prompts to authenticate (open the provided link, authenticate, copy the token back to console) and select the project you created
      1. Alternatively, if your `gcloud` CLI is already configured, just switch to the new project using:
         ```
         $ gcloud config set project <your-project>
