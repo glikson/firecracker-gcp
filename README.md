@@ -1,6 +1,6 @@
 # Running Firecracker VMM on GCP with nested KVM
 
-At the AWS re:Invent 2018 conference, Amazon has [open-sourced](https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/) the KVM-based virtualization runtime ([Firetracker](https://github.com/firecracker-microvm/firecracker/blob/master/docs/getting-started.md#appendix-a-setting-up-kvm-access)) they use for serverless workloads (Lambda and Fargate), which quickly became one of the most trending repositories on github.
+At the AWS re:Invent 2018 conference, Amazon has [open-sourced](https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/) the KVM-based virtualization runtime ([Firecracker](https://github.com/firecracker-microvm/firecracker/blob/master/docs/getting-started.md#appendix-a-setting-up-kvm-access)) they use for serverless workloads (Lambda and Fargate), which quickly became one of the most trending repositories on github.
 
 So, it is natural for an average geek to be curious enough to try it out. Unfortunately, Firecracker currently only works with KVM, meaning that one would not be able to try it out in a Docker container on their laptop, or even on an EC2 instance. Fortunately, Google Compute Engine (GCE) supports nested KVM virtualization. Furthermore, if you create a GCP account, you can get $300 credits for a 1-year trial - which should be more than enough for Firetracker experiments (as well as lots of other experiments, or maybe even to run a small serverless production workload for a year).
 
@@ -19,14 +19,14 @@ Here is a brief summary of steps to create such a setup, comprising a Ubuntu-bas
         $ sudo apt-get update && sudo apt-get install -y google-cloud-sdk
         ```        
      1. Configure the CLI by running:
-     ```
-     $ gcloud init --console-only
-     ```
+        ```
+        $ gcloud init --console-only
+        ```
      Follow the prompts to authenticate (open the provided link, authenticate, copy the token back to console) and select the project you created
      1. Alternatively, if your `gcloud` CLI is already configured, just switch to the new project using:
-     ```
-     $ gcloud config set project <your-project>
-     ```
+        ```
+        $ gcloud config set project <your-project>
+        ```
   1. The next step is to create a VM image able to run nested KVM (as outlined [here](https://cloud.google.com/compute/docs/instances/enable-nested-virtualization-vm-instances)). **IMPORTANT:** Notice that Firecracker requires a relatively new kernel, so you should use a recent Ubuntu 18 image (or equivalent).
      ```
      $ gcloud compute disks create disk-ub18 --image-project ubuntu-os-cloud --image-family ubuntu-1804-lts
@@ -63,39 +63,39 @@ Here is a brief summary of steps to create such a setup, comprising a Ubuntu-bas
      ```
   1. Run Firecracker
      1. Run the VMM (if everything is working, it will NOT return to your command prompt):
-     ```
-     $ rm -f /tmp/firecracker.sock && ./firecracker --api-sock /tmp/firecracker.sock
-     ```
+        ```
+        $ rm -f /tmp/firecracker.sock && ./firecracker --api-sock /tmp/firecracker.sock
+        ```
      1. Open an additional terminal, SSH into your `firecracker-vm`. Configure and start the Guest VM (ignore the 'No Content' outputs):
-     ```
-     $ curl --unix-socket /tmp/firecracker.sock -i \
-       -X PUT 'http://localhost/boot-source' -H 'Accept: application/json' -H 'Content-Type: application/json' \
-       -d '{"kernel_image_path":"./hello-vmlinux.bin","boot_args":"console=ttyS0 reboot=k panic=1 pci=off"}'
-     $ curl --unix-socket /tmp/firecracker.sock -i \
-       -X PUT 'http://localhost/drives/rootfs' -H 'Accept: application/json' -H 'Content-Type: application/json' \
-       -d '{"drive_id":"rootfs","path_on_host":"./hello-rootfs.ext4","is_root_device":true,"is_read_only":false}'
-     $ curl --unix-socket /tmp/firecracker.sock -i \
-       -X PUT 'http://localhost/actions' -H  'Accept: application/json' -H  'Content-Type: application/json' \
-       -d '{"action_type":"InstanceStart"}'
-     ```
+        ```
+        $ curl --unix-socket /tmp/firecracker.sock -i \
+          -X PUT 'http://localhost/boot-source' -H 'Accept: application/json' -H 'Content-Type: application/json' \
+          -d '{"kernel_image_path":"./hello-vmlinux.bin","boot_args":"console=ttyS0 reboot=k panic=1 pci=off"}'
+        $ curl --unix-socket /tmp/firecracker.sock -i \
+          -X PUT 'http://localhost/drives/rootfs' -H 'Accept: application/json' -H 'Content-Type: application/json' \
+          -d '{"drive_id":"rootfs","path_on_host":"./hello-rootfs.ext4","is_root_device":true,"is_read_only":false}'
+        $ curl --unix-socket /tmp/firecracker.sock -i \
+          -X PUT 'http://localhost/actions' -H  'Accept: application/json' -H  'Content-Type: application/json' \
+          -d '{"action_type":"InstanceStart"}'
+        ```
      1. Switch back to the **first** terminal (where VMM is running), use 'root/root' to log into the guest. **Done!**
-     ```
-     Welcome to Alpine Linux 3.8
-     Kernel 4.14.55-84.37.amzn2.x86_64 on an x86_64 (ttyS0)
-     
-     localhost login: root
-     Password:
-     Welcome to Alpine!
-     
-     The Alpine Wiki contains a large amount of how-to guides and general
-     information about administrating Alpine systems.
-     See <http://wiki.alpinelinux.org>.
-     
-     You can setup the system with the command: setup-alpine
-     
-     You may change this message by editing /etc/motd.
-     
-     login[858]: root login on 'ttyS0'
-     localhost:~#
-     ```
+        ```
+        Welcome to Alpine Linux 3.8
+        Kernel 4.14.55-84.37.amzn2.x86_64 on an x86_64 (ttyS0)
+        
+        localhost login: root
+        Password:
+        Welcome to Alpine!
+        
+        The Alpine Wiki contains a large amount of how-to guides and general
+        information about administrating Alpine systems.
+        See <http://wiki.alpinelinux.org>.
+        
+        You can setup the system with the command: setup-alpine
+        
+        You may change this message by editing /etc/motd.
+        
+        login[858]: root login on 'ttyS0'
+        localhost:~#
+        ```
 **WARNING:** Keep in mind that Firecracker is very new, so the above instructions might become obsolete. Also, notice that this is not even a full 'hello world' example, given that guest VM is pretty much useless without network etc.
