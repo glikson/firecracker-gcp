@@ -1,5 +1,7 @@
 # Running Firecracker VMM on GCP with nested KVM
 
+***NOTE: the content of this article has been contributed to the [official Firecracker repository](https://github.com/firecracker-microvm/firecracker/blob/master/docs/dev-machine-setup.md). WARNING: the content of this article might be outdated.***
+
 At the AWS re:Invent 2018 conference, Amazon has [open-sourced](https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/) the KVM-based virtualization runtime ([Firecracker](https://github.com/firecracker-microvm/firecracker/blob/master/docs/getting-started.md#appendix-a-setting-up-kvm-access)) they use for serverless workloads (Lambda and Fargate), which quickly became one of the most trending repositories on github.
 
 So, it is natural for an average geek to be curious enough to try it out. Unfortunately, Firecracker currently only works with KVM, meaning that one would not be able to try it out in a Docker container on their laptop, or even on an EC2 instance. Fortunately, Google Compute Engine (GCE) supports nested KVM virtualization. Furthermore, if you create a GCP account, you can get $300 credits for a 1-year trial - which should be more than enough for Firetracker experiments (as well as lots of other experiments, or maybe even to run a small serverless production workload for a year).
